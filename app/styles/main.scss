@@ -1,0 +1,26 @@
+/* Border box: http://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
+*, *:before, *:after { box-sizing: border-box; }
+
+/* Clear fix: http://davidwalsh.name/css-clear-fix */
+@mixin clear {
+  &::before, &::after { content: " "; display: table; }
+  &::after { clear: both; }
+}
+
+@mixin display-font {
+  font-family: "Helvetica",sans-serif;
+}
+@mixin text-font {
+  font-family: "Georgia",serif;
+}
+
+@mixin trail-off {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+body {
+  @include text-font;
+  margin: 0;
+}
