@@ -53,7 +53,7 @@ module.exports = (grunt) ->
 
     sass:
       build:
-        src: "app/styles/**/*.scss"
+        src: "app/styles/main.scss"
         dest: ".tmp/main.css"
 
     autoprefixer:
