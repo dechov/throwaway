@@ -7,6 +7,12 @@ module.exports = (grunt) ->
       options:
         livereload: LIVERELOAD_PORT
         spawn: false
+      bower:
+        files: "bower_components/**"
+        tasks: ["copy:bower"]
+      vendor:
+        files: "app/vendor"
+        tasks: ["copy:vendor"]
       index:
         files: "app/index.html"
         tasks: ["copy:index"]
@@ -14,14 +20,14 @@ module.exports = (grunt) ->
         files: "app/scripts/**/*.coffee"
         tasks: ["copy:source", "coffee"]
       styles:
-        files: "app/styles/**/*.scss"
+        files: "app/styles/**/*"
         tasks: ["sass", "autoprefixer"]
+      assets:
+        files: "app/assets/**/*"
+        tasks: ["copy:assets"]
       data:
         files: "data/**/*"
         tasks: ["copy:data"]
-      vendor:
-        files: "vendor"
-        tasks: ["copy:vendor"]
 
     clean:
       build: ".tmp"
@@ -45,29 +51,51 @@ module.exports = (grunt) ->
           dest: ".tmp"
           ext: ".js"
         ]
+      production:
+        files: [
+          expand: true
+          cwd: "app/scripts"
+          src: "**/*.coffee"
+          dest: ".tmp"
+          ext: ".js"
+        ]
 
     copy:
       index:
         expand: true
-        src: "app/index.html"
+        cwd: "app"
+        src: "index.html"
         dest: ".tmp/"
-        flatten: true
+      assets:
+        expand: true
+        cwd: "app"
+        src: "assets/**/*"
+        dest: ".tmp/"
       source:
         src: "app/scripts/**"
         dest: ".tmp/"
-      data:
-        src: "data/**"
-        dest: ".tmp/"
-      vendor:
+      bower:
         expand: true
-        cwd: "vendor/"
-        dest: ".tmp/vendor"
+        cwd: "bower_components"
+        dest: "app/vendor"
         src: [
           "requirejs/require.js"
           "modernizr/modernizr.js"
         ]
+      vendor:
+        expand: true
+        cwd: "app"
+        src: "vendor/**/*"
+        dest: ".tmp"
+      data:
+        expand: true
+        cwd: "data"
+        dest: ".tmp/data"
+        src: []
 
     sass:
+      options:
+        sourcemap: true
       build:
         src: "app/styles/main.scss"
         dest: ".tmp/main.css"
@@ -84,6 +112,7 @@ module.exports = (grunt) ->
     "clean"
     "copy:vendor"
     "copy:data"
+    "copy:assets"
     "copy:index"
     "copy:source"
     "sass:build"
@@ -91,4 +120,15 @@ module.exports = (grunt) ->
     "coffee:build"
     "connect:livereload"
     "watch"
+  ]
+
+  grunt.registerTask "production", [
+    "clean"
+    "copy:vendor"
+    "copy:data"
+    "copy:assets"
+    "copy:index"
+    "sass:build"
+    "autoprefixer:build"
+    "coffee:production"
   ]
