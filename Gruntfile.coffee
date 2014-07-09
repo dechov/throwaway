@@ -1,30 +1,38 @@
 module.exports = (grunt) ->
-  require('load-grunt-tasks')(grunt)
+  LIVERELOAD_PORT = 35734
+  require("load-grunt-tasks")(grunt)
 
   grunt.initConfig
     watch:
       options:
-        livereload: true
+        livereload: LIVERELOAD_PORT
         spawn: false
       index:
-        files: 'app/index.html'
-        tasks: ['copy:index']
+        files: "app/index.html"
+        tasks: ["copy:index"]
       scripts:
-        files: 'app/scripts/**/*.coffee'
-        tasks: ['coffee']
+        files: "app/scripts/**/*.coffee"
+        tasks: ["copy:source", "coffee"]
       styles:
-        files: 'app/styles/**/*.scss'
-        tasks: ['sass', 'autoprefixer']
+        files: "app/styles/**/*.scss"
+        tasks: ["sass", "autoprefixer"]
+      data:
+        files: "data/**/*"
+        tasks: ["copy:data"]
+      vendor:
+        files: "vendor"
+        tasks: ["copy:vendor"]
 
     clean:
-      build: '.tmp'
+      build: ".tmp"
 
     connect:
       livereload:
         options:
-          port: 9000
-          base: '.tmp'
-          livereload: true
+          port: 8000
+          base: ".tmp"
+          livereload: LIVERELOAD_PORT
+          useAvailablePort: true
 
     coffee:
       build:
@@ -41,15 +49,23 @@ module.exports = (grunt) ->
     copy:
       index:
         expand: true
-        src: 'app/index.html'
-        dest: '.tmp/'
+        src: "app/index.html"
+        dest: ".tmp/"
         flatten: true
-      vendor:
-        src: 'vendor/**/*.{js,css}'
-        dest: '.tmp/'
+      source:
+        src: "app/scripts/**"
+        dest: ".tmp/"
       data:
-        src: 'data/*'
-        dest: '.tmp/'
+        src: "data/**"
+        dest: ".tmp/"
+      vendor:
+        expand: true
+        cwd: "vendor/"
+        dest: ".tmp/vendor"
+        src: [
+          "requirejs/require.js"
+          "modernizr/modernizr.js"
+        ]
 
     sass:
       build:
@@ -58,20 +74,21 @@ module.exports = (grunt) ->
 
     autoprefixer:
       options:
-        browsers: ['> 1%']
+        browsers: ["> 1%"]
       build:
-        src: '.tmp/main.css',
-        dest: '.tmp/main.css'
+        src: ".tmp/main.css",
+        dest: ".tmp/main.css"
 
 
-  grunt.registerTask 'default', [
-    'clean'
-    'copy:vendor'
-    'copy:data'
-    'copy:index'
-    'sass:build'
-    'autoprefixer:build'
-    'coffee:build'
-    'connect:livereload'
-    'watch'
+  grunt.registerTask "default", [
+    "clean"
+    "copy:vendor"
+    "copy:data"
+    "copy:index"
+    "copy:source"
+    "sass:build"
+    "autoprefixer:build"
+    "coffee:build"
+    "connect:livereload"
+    "watch"
   ]
