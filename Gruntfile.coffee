@@ -1,15 +1,25 @@
 module.exports = (grunt) ->
-  LIVERELOAD_PORT = 35734
+
+  PORT = 8106
+
+  BOWER_FILES = [
+    "requirejs/require.js"
+    "modernizr/modernizr.js"
+  ]
+
+  DATA_FILES = []
+
+
   require("load-grunt-tasks")(grunt)
 
   grunt.initConfig
     watch:
       options:
-        livereload: LIVERELOAD_PORT
+        livereload: PORT + 3e4
         spawn: false
       bower:
-        files: "bower_components/**"
-        tasks: ["copy:bower"]
+        files: BOWER_FILES.map (d) -> "bower_components/#{d}"
+        tasks: ["copy:bower", "copy:vendor"]
       vendor:
         files: "app/vendor"
         tasks: ["copy:vendor"]
@@ -35,9 +45,9 @@ module.exports = (grunt) ->
     connect:
       livereload:
         options:
-          port: 8000
+          port: PORT
           base: ".tmp"
-          livereload: LIVERELOAD_PORT
+          livereload: PORT + 3e4
           useAvailablePort: true
 
     coffee:
@@ -78,10 +88,7 @@ module.exports = (grunt) ->
         expand: true
         cwd: "bower_components"
         dest: "app/vendor"
-        src: [
-          "requirejs/require.js"
-          "modernizr/modernizr.js"
-        ]
+        src: BOWER_FILES
       vendor:
         expand: true
         cwd: "app"
@@ -91,7 +98,7 @@ module.exports = (grunt) ->
         expand: true
         cwd: "data"
         dest: ".tmp/data"
-        src: []
+        src: DATA_FILES
 
     sass:
       options:
