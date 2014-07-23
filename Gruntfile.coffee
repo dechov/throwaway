@@ -1,13 +1,14 @@
 module.exports = (grunt) ->
 
   PORT = 8106
-
+  DATA_FILES = []
   BOWER_FILES = [
     "requirejs/require.js"
     "modernizr/modernizr.js"
+    "d3/d3.min.js"
+    "underscore/underscore.js"
+    "react/react-with-addons.js"
   ]
-
-  DATA_FILES = []
 
 
   require("load-grunt-tasks")(grunt)
@@ -115,8 +116,9 @@ module.exports = (grunt) ->
         dest: ".tmp/main.css"
 
 
-  grunt.registerTask "default", [
+  grunt.registerTask "development", [
     "clean"
+    "copy:bower"
     "copy:vendor"
     "copy:data"
     "copy:assets"
@@ -128,9 +130,11 @@ module.exports = (grunt) ->
     "connect:livereload"
     "watch"
   ]
+  grunt.registerTask "default", ["development"]
 
   grunt.registerTask "production", [
     "clean"
+    "copy:bower"
     "copy:vendor"
     "copy:data"
     "copy:assets"
