@@ -49,7 +49,6 @@ module.exports = (grunt) ->
           port: PORT
           base: ".tmp"
           livereload: PORT + 3e4
-          useAvailablePort: true
 
     coffee:
       build:
