@@ -13,7 +13,7 @@ define ["d3", "underscore", "react"], (d3, _, React) ->
     componentDidMount: ->
       d3.select(window).on "resize", => @setState layout: @computeLayout()
 
-    componentDidUnmount: ->
+    componentWillUnmount: ->
       d3.select(window).on "resize", null
 
     render: ->
