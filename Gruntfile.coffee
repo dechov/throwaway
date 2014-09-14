@@ -1,6 +1,6 @@
 module.exports = (grunt) ->
 
-  PORT = 8106
+  PORT = 8109
   DATA_FILES = []
   BOWER_FILES = [
     "requirejs/require.js"
@@ -46,8 +46,8 @@ module.exports = (grunt) ->
     connect:
       livereload:
         options:
-          port: PORT
           base: ".tmp"
+          port: PORT
           livereload: PORT + 3e4
 
     coffee:
@@ -70,6 +70,20 @@ module.exports = (grunt) ->
           ext: ".js"
         ]
 
+    sass:
+      options:
+        sourcemap: true
+      build:
+        src: "app/styles/main.scss"
+        dest: ".tmp/main.css"
+
+    autoprefixer:
+      options:
+        browsers: ["> 1%"]
+      build:
+        src: ".tmp/main.css",
+        dest: ".tmp/main.css"
+
     copy:
       index:
         expand: true
@@ -82,7 +96,7 @@ module.exports = (grunt) ->
         src: "assets/**/*"
         dest: ".tmp/"
       source:
-        src: "app/scripts/**"
+        src: ["app/scripts/**", "app/styles/**"]
         dest: ".tmp/"
       bower:
         expand: true
@@ -100,20 +114,21 @@ module.exports = (grunt) ->
         dest: ".tmp/data"
         src: DATA_FILES
 
-    sass:
+    aws: try grunt.file.readJSON "aws-credentials.json"
+    s3:
       options:
-        sourcemap: true
-      build:
-        src: "app/styles/main.scss"
-        dest: ".tmp/main.css"
-
-    autoprefixer:
-      options:
-        browsers: ["> 1%"]
-      build:
-        src: ".tmp/main.css",
-        dest: ".tmp/main.css"
-
+        key: "<%= aws.aws_access_key_id %>"
+        secret: "<%= aws.aws_secret_access_key %>"
+        # bucket: "throwaway.dechov.com"
+        gzip: true
+      production:
+        sync: [
+          src: ".tmp/**"
+          dest: "/"
+          rel: ".tmp"
+          options:
+            verify: true
+        ]
 
   grunt.registerTask "development", [
     "clean"
@@ -142,3 +157,4 @@ module.exports = (grunt) ->
     "autoprefixer:build"
     "coffee:production"
   ]
+  grunt.registerTask "deploy", ["production", "s3"]
